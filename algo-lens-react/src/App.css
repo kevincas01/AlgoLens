@@ -36,3 +36,38 @@
     transform: rotate(360deg);
   }
 }
+button {
+  background: linear-gradient(45deg, #6a11cb, #2575fc); /* Edgy gradient */
+  color: white;
+  border: none;
+  border-radius: 12px; /* Rounded edges */
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  margin: 5px; /* Space between buttons */
+}
+
+button:hover {
+  transform: scale(1.1); /* Slight zoom on hover */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3); /* Elevated shadow */
+}
+
+button:active {
+  transform: scale(1); /* Return to normal size on click */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduce shadow */
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 117, 252, 0.5); /* Focus ring */
+}
+button:disabled {
+  background-color: #ddd; /* Gray background */
+  color: #aaa; /* Faded text color */
+  cursor: not-allowed; /* "Not allowed" cursor */
+  opacity: 0.6; /* Slightly transparent */
+}
+
