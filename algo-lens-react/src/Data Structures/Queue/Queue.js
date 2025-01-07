@@ -26,7 +26,7 @@ const Queue = ({ stepByStepMode }) => {
     setTimeout(() => {
       setQueue((prevQueue) => prevQueue.slice(1));
       setFadeOutNodeIndex(null);
-    }, 500);
+    }, 200);
   };
 
   const reset = () => {

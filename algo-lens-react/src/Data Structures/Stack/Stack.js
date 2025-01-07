@@ -24,13 +24,12 @@ const Stack = ({ stepByStepMode }) => {
     setFadeOutNodeIndex(stack.length - 1);
 
     setTimeout(() => {
-      const newHeap = [...stack];
-      newHeap.pop();
       setStack((prevStack) => {
-        prevStack.pop();
-        return prevStack;
+        const newStack = [...prevStack]; // Create a copy of the stack
+        newStack.pop(); // Modify the copy
+        return newStack; // Return the updated copy
       });
-    }, 500);
+    }, 200);
   };
 
   const reset = () => {
@@ -51,7 +50,7 @@ const Stack = ({ stepByStepMode }) => {
     svgWidth / 2,
     svgHeight
   );
-
+  console.log(stack, stack.length);
   return (
     <div style={{ textAlign: "center" }}>
       <h1>Stack Visualizer</h1>
