@@ -51,7 +51,7 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
   const heapifyUp = (heapArray, index, element) => {
     let steps = [];
-   
+
     while (index > 0 && element < heapArray[getParentIndex(index)]) {
       const parentIndex = getParentIndex(index);
       steps.push([index, parentIndex]);
@@ -63,7 +63,10 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
   const remove = () => {
     if (heap.length === 0) return null;
-    if (heap.length === 1) return heap.pop();
+    if (heap.length === 1) {
+      setHeap([]);
+      return heap.pop();
+    }
 
     const newHeap = [...heap];
     const root = newHeap[0];

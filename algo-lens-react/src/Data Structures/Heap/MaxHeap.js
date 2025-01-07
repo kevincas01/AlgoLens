@@ -14,10 +14,7 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
   const [animatedLineIndex, setAnimatedLineIndex] = useState(null); // Index for the new animated line
 
   useEffect(() => {
-    if (
-      !stepByStepMode &&
-      stepsToExecute.length > 0
-    ) {
+    if (!stepByStepMode && stepsToExecute.length > 0) {
       const intervalId = setInterval(() => {
         executeNextStep();
       }, 1000); // Execute every 500ms
@@ -43,7 +40,7 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
   const add = (element) => {
     if (heap.length >= MAX_SIZE) return;
-    setCurrentStep(0)
+    setCurrentStep(0);
 
     const newHeap = [...heap, element];
     setHeap(newHeap);
@@ -54,7 +51,7 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
   const heapifyUp = (heapArray, index, element) => {
     let steps = [];
-   
+
     while (index > 0 && element > heapArray[getParentIndex(index)]) {
       const parentIndex = getParentIndex(index);
       steps.push([index, parentIndex]);
@@ -66,7 +63,10 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
   const remove = () => {
     if (heap.length === 0) return null;
-    if (heap.length === 1) return heap.pop();
+    if (heap.length === 1) {
+      setHeap([]);
+      return heap.pop();
+    }
 
     const newHeap = [...heap];
     const root = newHeap[0];
