@@ -1,6 +1,6 @@
 import React from "react";
 import { calculateElementPositions } from "../utils/elementArrays";
-
+import BaseSVG from "./BaseSVG";
 
 const QueueStackSvg = ({
   array,
@@ -17,19 +17,17 @@ const QueueStackSvg = ({
   );
 
   return (
-    <svg
-      width={svgWidth}
-      height={svgHeight}
-      style={{
-        display: "block",
-        margin: "20px auto",
-        borderRadius: "15px",
-        background: "linear-gradient(135deg, #1e3c72, #2a5298)",
-        boxShadow:
-          "0 8px 15px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.1)",
-        overflow: "hidden",
-      }}
-    >
+    <BaseSVG svgWidth={svgWidth} svgHeight={svgHeight}>
+      <defs>
+        <linearGradient id="circleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{ stopColor: "#6a11cb", stopOpacity: 1 }} />
+          <stop
+            offset="100%"
+            style={{ stopColor: "#2575fc", stopOpacity: 1 }}
+          />
+        </linearGradient>
+      </defs>
+
       {array.map((value, index) => (
         <g
           key={index}
@@ -50,7 +48,6 @@ const QueueStackSvg = ({
             fill="url(#circleGradient)"
             strokeWidth="2"
           />
-
           <text
             x={elementPositions[index].x}
             y={elementPositions[index].y + 5}
@@ -67,16 +64,6 @@ const QueueStackSvg = ({
           </text>
         </g>
       ))}
-
-      <defs>
-        <linearGradient id="circleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{ stopColor: "#6a11cb", stopOpacity: 1 }} />
-          <stop
-            offset="100%"
-            style={{ stopColor: "#2575fc", stopOpacity: 1 }}
-          />
-        </linearGradient>
-      </defs>
 
       <style>
         {`
@@ -103,7 +90,7 @@ const QueueStackSvg = ({
           }
         `}
       </style>
-    </svg>
+    </BaseSVG>
   );
 };
 
