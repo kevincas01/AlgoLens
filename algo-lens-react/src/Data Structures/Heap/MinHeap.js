@@ -3,7 +3,7 @@ import HeapButtons from "../../Components/HeapButtons";
 import { calculateNodePositions, MAX_SIZE } from "../../utils/nodeArrays";
 
 const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
-   const [heap, setHeap] = useState([]);
+  const [heap, setHeap] = useState([]);
   const [currentStep, setCurrentStep] = useState(0); // Tracks the current step of the process
   const [highlightedIndices, setHighlightedIndices] = useState([]); // Indices to highlight
 
@@ -20,7 +20,7 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
       }, 1000); // Execute every 500ms
 
       // Clear the interval when all steps are executed or if the mode is changed
-      if (currentStep >= stepsToExecute.length) {
+      if (currentStep > stepsToExecute.length || stepsToExecute.length == 0) {
         clearInterval(intervalId);
       }
 
@@ -40,6 +40,7 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
   const add = (element) => {
     if (heap.length >= MAX_SIZE) return;
+    setCurrentStep(0);
 
     const newHeap = [...heap, element];
     setHeap(newHeap);
@@ -50,7 +51,8 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
   const heapifyUp = (heapArray, index, element) => {
     let steps = [];
-    while (index > 0 && element > heapArray[getParentIndex(index)]) {
+   
+    while (index > 0 && element < heapArray[getParentIndex(index)]) {
       const parentIndex = getParentIndex(index);
       steps.push([index, parentIndex]);
       index = parentIndex;
@@ -81,13 +83,12 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
       if (
         rightChildIndex < heapArray.length &&
-        heapArray[rightChildIndex] > heapArray[biggerChildIndex] &&
-        heapArray[rightChildIndex] > element
+        heapArray[rightChildIndex] < heapArray[biggerChildIndex] &&
+        heapArray[rightChildIndex] < element
       ) {
         biggerChildIndex = rightChildIndex;
       }
-      console.log(element, heapArray[biggerChildIndex]);
-      if (element >= heapArray[biggerChildIndex]) break;
+      if (element <= heapArray[biggerChildIndex]) break;
 
       steps.push([index, biggerChildIndex]);
       index = biggerChildIndex;
@@ -95,10 +96,9 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
     setStepsToExecute(steps);
     setHighlightedIndices(steps);
   };
-
   // Execute the next step when the user clicks the "Play" button
   const executeNextStep = () => {
-    if (currentStep < stepsToExecute.length) {
+    if (currentStep < stepsToExecute.length && stepsToExecute.length != 0) {
       const [index, parentIndex] = stepsToExecute[currentStep];
       // Perform the swap or comparison
       if (parentIndex !== undefined) {
@@ -108,10 +108,25 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
       }
 
       // Remove the executed step from the stepsToExecute array
-      setStepsToExecute((prevSteps) => prevSteps.slice(1));
-      setHighlightedIndices((prevIndices) => prevIndices.slice(1));
+      setCurrentStep((prevStep) => prevStep + 1);
 
       // Increment the currentStep to move to the next step
+    } else {
+      setCurrentStep(0);
+      setStepsToExecute([]);
+      setHighlightedIndices([]);
+    }
+  };
+  const executePreviousStep = () => {
+    if (currentStep <= stepsToExecute.length) {
+      const [index, parentIndex] = stepsToExecute[currentStep - 1];
+      // Perform the swap or comparison
+      if (parentIndex !== undefined) {
+        swap(heap, index, parentIndex);
+      } else {
+        swap(heap, index, index); // Self-swap (for highlighting)
+      }
+      setCurrentStep((prevStep) => prevStep - 1);
     }
   };
 
@@ -122,7 +137,6 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
     setCurrentStep(0);
     setHighlightedIndices([]);
     setStepsToExecute([]);
-    setStepByStepMode(false);
     setPaused(false);
     setFadeInNodeIndex(null);
     setAnimatedLineIndex(null);
@@ -134,7 +148,7 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
   // Calculate node positions
 
-  const nodePositions = calculateNodePositions(heap,svgWidth);
+  const nodePositions = calculateNodePositions(heap, svgWidth);
 
   return (
     <div style={{ textAlign: "center" }}>
@@ -144,7 +158,9 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
         reset={reset}
         add={add}
         remove={remove}
+        currentStep={currentStep}
         executeNextStep={executeNextStep}
+        executePreviousStep={executePreviousStep}
         stepByStepMode={stepByStepMode}
         stepsToExecute={stepsToExecute}
       />
@@ -196,7 +212,7 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
         {/* Render nodes (circles) */}
         {heap.map((value, index) => (
           <>
-            <g>
+            <g key={index}>
               <circle
                 cx={nodePositions[index].x}
                 cy={nodePositions[index].y}
@@ -208,8 +224,9 @@ const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
                   animation:
                     fadeInNodeIndex === index ? "fadeIn 1s forwards" : "none",
                   filter:
+                    highlightedIndices.length > currentStep &&
                     highlightedIndices.length > 0 &&
-                    highlightedIndices[0].includes(index)
+                    highlightedIndices[currentStep].includes(index)
                       ? "drop-shadow(0 0 8px #2ecc71)"
                       : "drop-shadow(0 0 4px rgba(0, 0, 0, 0.2))" /* Glowing effect for highlights */,
                 }}
