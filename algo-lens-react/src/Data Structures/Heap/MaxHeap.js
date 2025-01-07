@@ -14,14 +14,16 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
   const [animatedLineIndex, setAnimatedLineIndex] = useState(null); // Index for the new animated line
 
   useEffect(() => {
-    if (!stepByStepMode && stepsToExecute.length > 0 && currentStep <= stepsToExecute.length) {
-
+    if (
+      !stepByStepMode &&
+      stepsToExecute.length > 0
+    ) {
       const intervalId = setInterval(() => {
         executeNextStep();
       }, 1000); // Execute every 500ms
 
       // Clear the interval when all steps are executed or if the mode is changed
-      if (currentStep > stepsToExecute.length ||stepsToExecute.length ==0) {console.log("cancellleddd")
+      if (currentStep > stepsToExecute.length || stepsToExecute.length == 0) {
         clearInterval(intervalId);
       }
 
@@ -41,6 +43,7 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
   const add = (element) => {
     if (heap.length >= MAX_SIZE) return;
+    setCurrentStep(0)
 
     const newHeap = [...heap, element];
     setHeap(newHeap);
@@ -51,6 +54,7 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
   const heapifyUp = (heapArray, index, element) => {
     let steps = [];
+   
     while (index > 0 && element > heapArray[getParentIndex(index)]) {
       const parentIndex = getParentIndex(index);
       steps.push([index, parentIndex]);
@@ -87,7 +91,6 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
       ) {
         biggerChildIndex = rightChildIndex;
       }
-      console.log(element, heapArray[biggerChildIndex]);
       if (element >= heapArray[biggerChildIndex]) break;
 
       steps.push([index, biggerChildIndex]);
@@ -96,10 +99,9 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
     setStepsToExecute(steps);
     setHighlightedIndices(steps);
   };
-
   // Execute the next step when the user clicks the "Play" button
   const executeNextStep = () => {
-    if (currentStep < stepsToExecute.length && stepsToExecute.length!=0) {
+    if (currentStep < stepsToExecute.length && stepsToExecute.length != 0) {
       const [index, parentIndex] = stepsToExecute[currentStep];
       // Perform the swap or comparison
       if (parentIndex !== undefined) {
@@ -112,16 +114,15 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
       setCurrentStep((prevStep) => prevStep + 1);
 
       // Increment the currentStep to move to the next step
-    }else{
-      setCurrentStep(0)
-      setStepsToExecute([])
-      setHighlightedIndices([])
+    } else {
+      setCurrentStep(0);
+      setStepsToExecute([]);
+      setHighlightedIndices([]);
     }
   };
   const executePreviousStep = () => {
-
     if (currentStep <= stepsToExecute.length) {
-      const [index, parentIndex] = stepsToExecute[currentStep-1];
+      const [index, parentIndex] = stepsToExecute[currentStep - 1];
       // Perform the swap or comparison
       if (parentIndex !== undefined) {
         swap(heap, index, parentIndex);
@@ -130,7 +131,6 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
       }
       setCurrentStep((prevStep) => prevStep - 1);
     }
-
   };
 
   const peek = () => (heap.length === 0 ? null : heap[0]);
@@ -227,7 +227,7 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
                   animation:
                     fadeInNodeIndex === index ? "fadeIn 1s forwards" : "none",
                   filter:
-                  highlightedIndices.length>currentStep &&
+                    highlightedIndices.length > currentStep &&
                     highlightedIndices.length > 0 &&
                     highlightedIndices[currentStep].includes(index)
                       ? "drop-shadow(0 0 8px #2ecc71)"
