@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
+import HeapButtons from "../../Components/HeapButtons";
+import { calculateNodePositions, MAX_SIZE } from "../../utils/nodeArrays";
 
-const MaxHeap = () => {
+const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
+  
   const [heap, setHeap] = useState([]);
   const [currentStep, setCurrentStep] = useState(0); // Tracks the current step of the process
   const [highlightedIndices, setHighlightedIndices] = useState([]); // Indices to highlight
 
   const [stepsToExecute, setStepsToExecute] = useState([]); // Steps to execute
 
-  const [stepByStepMode, setStepByStepMode] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [fadeInNodeIndex, setFadeInNodeIndex] = useState(null); // Index of the new node
+  const [animatedLineIndex, setAnimatedLineIndex] = useState(null); // Index for the new animated line
 
+  console.log(stepByStepMode);
   useEffect(() => {
     if (!stepByStepMode && stepsToExecute.length > 0) {
       const intervalId = setInterval(() => {
@@ -36,8 +41,12 @@ const MaxHeap = () => {
   };
 
   const add = (element) => {
+    if (heap.length >= MAX_SIZE) return;
+
     const newHeap = [...heap, element];
     setHeap(newHeap);
+    setFadeInNodeIndex(newHeap.length - 1);
+    setAnimatedLineIndex(newHeap.length - 1);
     heapifyUp(newHeap, newHeap.length - 1, element);
   };
 
@@ -72,7 +81,6 @@ const MaxHeap = () => {
       let biggerChildIndex = getLeftChildIndex(index);
       const rightChildIndex = getRightChildIndex(index);
 
-      console.log( heapArray[biggerChildIndex], heapArray[rightChildIndex], element)
       if (
         rightChildIndex < heapArray.length &&
         heapArray[rightChildIndex] > heapArray[biggerChildIndex] &&
@@ -111,65 +119,37 @@ const MaxHeap = () => {
 
   const peek = () => (heap.length === 0 ? null : heap[0]);
 
+  const reset = () => {
+    setHeap([]);
+    setCurrentStep(0);
+    setHighlightedIndices([]);
+    setStepsToExecute([]);
+    setStepByStepMode(false);
+    setPaused(false);
+    setFadeInNodeIndex(null);
+    setAnimatedLineIndex(null);
+  };
+
   // SVG dimensions
   const svgWidth = 700;
   const svgHeight = 500;
 
   // Calculate node positions
 
-  const getNodePositions = () => {
-    const newNodePositions = Array(heap.length).fill(null); // Initialize array to store node positions
-    recurseLevelPosition(newNodePositions, 0, svgWidth / 2, 50); // Start at center for root
-    return newNodePositions;
-  };
+  const nodePositions = calculateNodePositions(heap, svgWidth);
 
-  const recurseLevelPosition = (newNodePositions, index, x, y) => {
-    if (index < 0 || index > heap.length) return;
-
-    newNodePositions[index] = { x, y };
-    const level = Math.floor(Math.log2(index + 1)) + 1; // Calculate the level in the tree
-    const leftChild = getLeftChildIndex(index);
-    const rightChild = getRightChildIndex(index);
-    if (leftChild < heap.length) {
-      recurseLevelPosition(
-        newNodePositions,
-        leftChild,
-        x - 150 / level,
-        y + 80
-      );
-    }
-    if (rightChild < heap.length) {
-      recurseLevelPosition(
-        newNodePositions,
-        rightChild,
-        x + 150 / level,
-        y + 80
-      );
-    }
-  };
-  const nodePositions = getNodePositions(svgWidth);
-
-  console.log(highlightedIndices);
   return (
     <div style={{ textAlign: "center" }}>
       <h1>MaxHeap Visualizer</h1>
-      <button onClick={() => add(Math.floor(Math.random() * 100))}>
-        Add Random
-      </button>
-      <button onClick={() => remove()}>Remove Max</button>
-      {paused && (
-        <button
-          onClick={() => {
-            setPaused(true);
-          }}
-        >
-          Play
-        </button>
-      )}
-
-      {paused && stepsToExecute.length > 0 && (
-        <button onClick={executeNextStep}>Next Step</button>
-      )}
+      <HeapButtons
+        heap={heap}
+        reset={reset}
+        add={add}
+        remove={remove}
+        executeNextStep={executeNextStep}
+        stepByStepMode={stepByStepMode}
+        stepsToExecute={stepsToExecute}
+      />
 
       <svg
         width={svgWidth}
@@ -177,14 +157,25 @@ const MaxHeap = () => {
         style={{
           display: "block",
           margin: "20px auto",
-          border: "1px solid black",
-          backgroundColor: "white",
+          borderRadius: "15px", // Rounded corners for a sleek look
+          background: "linear-gradient(135deg, #1e3c72, #2a5298)", // Modern gradient background
+          boxShadow:
+            "0 8px 15px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.1)", // Soft shadows
+          overflow: "hidden", // Ensures child elements stay within the rounded edges
         }}
       >
         {/* Render edges (lines) */}
         {heap.map((_, index) => {
           const parentIndex = getParentIndex(index);
           if (parentIndex >= 0) {
+            const parentPos = nodePositions[parentIndex];
+            const childPos = nodePositions[index];
+            if (!parentPos || !childPos) return null;
+
+            const length = Math.sqrt(
+              Math.pow(childPos.x - parentPos.x, 2) +
+                Math.pow(childPos.y - parentPos.y, 2)
+            );
             return (
               <line
                 key={`line-${index}`}
@@ -193,6 +184,11 @@ const MaxHeap = () => {
                 x2={nodePositions[index].x}
                 y2={nodePositions[index].y}
                 stroke="black"
+                style={{
+                  opacity: animatedLineIndex === index ? 0 : 1,
+                  animation:
+                    animatedLineIndex === index ? "fadeIn 1s forwards" : "none",
+                }}
               />
             );
           }
@@ -201,30 +197,84 @@ const MaxHeap = () => {
 
         {/* Render nodes (circles) */}
         {heap.map((value, index) => (
-          <g key={index}>
-            <circle
-              cx={nodePositions[index].x}
-              cy={nodePositions[index].y}
-              r={10}
-              fill={
-                highlightedIndices.length > 0 &&
-                highlightedIndices[0].includes(index)
-                  ? "lightgreen"
-                  : "lightblue"
-              }
-              stroke="black"
-            />
-            <text
-              x={nodePositions[index].x}
-              y={nodePositions[index].y + 5}
-              textAnchor="middle"
-              fontSize="12"
-            >
-              {value}
-            </text>
-          </g>
+          <>
+            <g>
+              <circle
+                cx={nodePositions[index].x}
+                cy={nodePositions[index].y}
+                r={12} /* Slightly larger for a more impactful look */
+                fill="url(#circleGradient)" /* Apply a gradient */
+                strokeWidth="2"
+                style={{
+                  opacity: fadeInNodeIndex === index ? 0 : 1,
+                  animation:
+                    fadeInNodeIndex === index ? "fadeIn 1s forwards" : "none",
+                  filter:
+                    highlightedIndices.length > 0 &&
+                    highlightedIndices[0].includes(index)
+                      ? "drop-shadow(0 0 8px #2ecc71)"
+                      : "drop-shadow(0 0 4px rgba(0, 0, 0, 0.2))" /* Glowing effect for highlights */,
+                }}
+              />
+              <text
+                x={nodePositions[index].x}
+                y={nodePositions[index].y + 5}
+                textAnchor="middle"
+                fontSize="12"
+                fill="#ffffff" /* White text for better contrast */
+                style={{
+                  pointerEvents:
+                    "none" /* Ensure text doesn't block hover events */,
+                  fontWeight: "bold",
+                }}
+              >
+                {value}
+              </text>
+            </g>
+
+            {/* Add a gradient definition for circles */}
+            <defs>
+              <linearGradient
+                id="circleGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop
+                  offset="0%"
+                  style={{ stopColor: "#6a11cb", stopOpacity: 1 }}
+                />
+                <stop
+                  offset="100%"
+                  style={{ stopColor: "#2575fc", stopOpacity: 1 }}
+                />
+              </linearGradient>
+            </defs>
+          </>
         ))}
       </svg>
+      <style>
+        {`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+
+          @keyframes drawLine {
+            from {
+              stroke-dashoffset: 100%;
+            }
+            to {
+              stroke-dashoffset: 0;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };
