@@ -3,7 +3,6 @@ import HeapButtons from "../../Components/HeapButtons";
 import { calculateNodePositions, MAX_SIZE } from "../../utils/nodeArrays";
 
 const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
-  
   const [heap, setHeap] = useState([]);
   const [currentStep, setCurrentStep] = useState(0); // Tracks the current step of the process
   const [highlightedIndices, setHighlightedIndices] = useState([]); // Indices to highlight
@@ -14,15 +13,15 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
   const [fadeInNodeIndex, setFadeInNodeIndex] = useState(null); // Index of the new node
   const [animatedLineIndex, setAnimatedLineIndex] = useState(null); // Index for the new animated line
 
-  console.log(stepByStepMode);
   useEffect(() => {
-    if (!stepByStepMode && stepsToExecute.length > 0) {
+    if (!stepByStepMode && stepsToExecute.length > 0 && currentStep <= stepsToExecute.length) {
+
       const intervalId = setInterval(() => {
         executeNextStep();
       }, 1000); // Execute every 500ms
 
       // Clear the interval when all steps are executed or if the mode is changed
-      if (currentStep >= stepsToExecute.length) {
+      if (currentStep > stepsToExecute.length ||stepsToExecute.length ==0) {console.log("cancellleddd")
         clearInterval(intervalId);
       }
 
@@ -100,7 +99,7 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
 
   // Execute the next step when the user clicks the "Play" button
   const executeNextStep = () => {
-    if (currentStep < stepsToExecute.length) {
+    if (currentStep < stepsToExecute.length && stepsToExecute.length!=0) {
       const [index, parentIndex] = stepsToExecute[currentStep];
       // Perform the swap or comparison
       if (parentIndex !== undefined) {
@@ -110,11 +109,28 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
       }
 
       // Remove the executed step from the stepsToExecute array
-      setStepsToExecute((prevSteps) => prevSteps.slice(1));
-      setHighlightedIndices((prevIndices) => prevIndices.slice(1));
+      setCurrentStep((prevStep) => prevStep + 1);
 
       // Increment the currentStep to move to the next step
+    }else{
+      setCurrentStep(0)
+      setStepsToExecute([])
+      setHighlightedIndices([])
     }
+  };
+  const executePreviousStep = () => {
+
+    if (currentStep <= stepsToExecute.length) {
+      const [index, parentIndex] = stepsToExecute[currentStep-1];
+      // Perform the swap or comparison
+      if (parentIndex !== undefined) {
+        swap(heap, index, parentIndex);
+      } else {
+        swap(heap, index, index); // Self-swap (for highlighting)
+      }
+      setCurrentStep((prevStep) => prevStep - 1);
+    }
+
   };
 
   const peek = () => (heap.length === 0 ? null : heap[0]);
@@ -124,7 +140,6 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
     setCurrentStep(0);
     setHighlightedIndices([]);
     setStepsToExecute([]);
-    setStepByStepMode(false);
     setPaused(false);
     setFadeInNodeIndex(null);
     setAnimatedLineIndex(null);
@@ -146,7 +161,9 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
         reset={reset}
         add={add}
         remove={remove}
+        currentStep={currentStep}
         executeNextStep={executeNextStep}
+        executePreviousStep={executePreviousStep}
         stepByStepMode={stepByStepMode}
         stepsToExecute={stepsToExecute}
       />
@@ -198,7 +215,7 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
         {/* Render nodes (circles) */}
         {heap.map((value, index) => (
           <>
-            <g>
+            <g key={index}>
               <circle
                 cx={nodePositions[index].x}
                 cy={nodePositions[index].y}
@@ -210,8 +227,9 @@ const MaxHeap = ({ stepByStepMode, setStepByStepMode }) => {
                   animation:
                     fadeInNodeIndex === index ? "fadeIn 1s forwards" : "none",
                   filter:
+                  highlightedIndices.length>currentStep &&
                     highlightedIndices.length > 0 &&
-                    highlightedIndices[0].includes(index)
+                    highlightedIndices[currentStep].includes(index)
                       ? "drop-shadow(0 0 8px #2ecc71)"
                       : "drop-shadow(0 0 4px rgba(0, 0, 0, 0.2))" /* Glowing effect for highlights */,
                 }}

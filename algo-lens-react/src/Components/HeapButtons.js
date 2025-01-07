@@ -2,11 +2,14 @@ import React from "react";
 import { MAX_SIZE } from "../utils/nodeArrays";
 
 const HeapButtons = ({
+
   heap,
   reset,
   add,
   remove,
+  currentStep,
   executeNextStep,
+  executePreviousStep,
   stepByStepMode,
   stepsToExecute,
 }) => {
@@ -27,7 +30,10 @@ const HeapButtons = ({
       </button>
 
       {stepByStepMode && stepsToExecute.length > 0 && (
-        <button onClick={executeNextStep}>Next Step</button>
+        <>
+          <button onClick={executePreviousStep} disabled={currentStep===0}>Previous Step</button>
+          <button onClick={executeNextStep}>{currentStep=== stepsToExecute.length?"Finish":"Next Step"}</button>
+        </>
       )}
     </div>
   );
