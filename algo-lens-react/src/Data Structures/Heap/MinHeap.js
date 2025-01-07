@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import HeapButtons from "../../Components/HeapButtons";
 import { calculateNodePositions, MAX_SIZE } from "../../utils/nodeArrays";
 
-const MinHeap = ({ stepByStepMode, setStepByStepMode }) => {
+const MinHeap = ({ stepByStepMode }) => {
   const [heap, setHeap] = useState([]);
   const [currentStep, setCurrentStep] = useState(0); // Tracks the current step of the process
   const [highlightedIndices, setHighlightedIndices] = useState([]); // Indices to highlight
