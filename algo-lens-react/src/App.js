@@ -6,6 +6,7 @@ import HeaderSettings from "./Components/HeaderSettings";
 import { useState } from "react";
 import Stack from "./Data Structures/Stack/Stack";
 import Queue from "./Data Structures/Queue/Queue";
+import LinkedList from "./Data Structures/LinkedList/LinkedList";
 
 function App() {
   const [stepByStepMode, setStepByStepMode] = useState(false);
@@ -15,14 +16,11 @@ function App() {
         stepByStepMode={stepByStepMode}
         setStepByStepMode={setStepByStepMode}
       />
-      <MaxHeap
-        stepByStepMode={stepByStepMode}
-      />
-      <MinHeap
-        stepByStepMode={stepByStepMode}
-      />
-      <Stack stepByStepMode={stepByStepMode}/>
-      <Queue stepByStepMode={stepByStepMode}/>
+      <LinkedList stepByStepMode={stepByStepMode} />
+      <MaxHeap stepByStepMode={stepByStepMode} />
+      <MinHeap stepByStepMode={stepByStepMode} />
+      <Stack stepByStepMode={stepByStepMode} />
+      <Queue stepByStepMode={stepByStepMode} />
     </div>
   );
 }
