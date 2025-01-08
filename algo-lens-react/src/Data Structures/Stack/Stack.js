@@ -50,7 +50,6 @@ const Stack = ({ stepByStepMode }) => {
     svgWidth / 2,
     svgHeight
   );
-  console.log(stack, stack.length);
   return (
     <div style={{ textAlign: "center" }}>
       <h1>Stack Visualizer</h1>

@@ -1,7 +1,7 @@
 import React from "react";
 
 const BaseSVG = ({ children, svgWidth, svgHeight }) => {
-  console.log(svgWidth, svgHeight);
+
   return (
     <svg
       width={svgWidth}
