@@ -71,7 +71,6 @@ button:disabled {
   opacity: 0.6; /* Slightly transparent */
 }
 
-
 .settings-container {
   position: fixed;
   top: 0;
@@ -99,14 +98,17 @@ button:disabled {
   gap: 8px;
 }
 
-
 .switch-mode-container {
   width: 40px;
   height: 20px;
   position: relative;
   border-radius: 20px;
   background-color: gray; /* Default background */
-  background-image: linear-gradient(to right, #2a5298 70%, gray 20%); /* Initial gradient */
+  background-image: linear-gradient(
+    to right,
+    #2a5298 70%,
+    gray 20%
+  ); /* Initial gradient */
   background-size: 0 100%; /* Start with no color on the left side */
   background-repeat: no-repeat;
   transition: background-size 0.3s ease 0.1s; /* Smooth transition with delay */
@@ -130,7 +132,7 @@ button:disabled {
   left: 0px; /* Start position on the left */
   top: 50%;
   transform: translateY(-50%); /* Center vertically */
-  transition: left .5s ease, background-color 0.3s ease; /* Smooth transition */
+  transition: left 0.5s ease, background-color 0.3s ease; /* Smooth transition */
 }
 
 /* Checked state */
@@ -139,7 +141,6 @@ button:disabled {
   background-color: #2a5298;
   filter: brightness(2);
 }
-
 
 /* Hover state */
 .settings-checkbox:hover {
@@ -157,5 +158,26 @@ button:disabled {
   font-size: 16px;
   color: #333;
   vertical-align: middle;
+}
+
+
+.sorting-visualization {
+  justify-items: center;
+  align-content: center;
+  width: 100vw;
+}
+
+.bars-wrapper {
+  margin: auto;
+  display: flex;
+  gap: 2px;
+  align-items: end;
+  justify-content: center;
+  height: 75vh;
+}
+
+.sort-bar {
+  width: 5px;
+  background-color: #61dafb;
 }
 
