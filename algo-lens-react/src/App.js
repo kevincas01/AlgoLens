@@ -17,7 +17,7 @@ function App() {
         stepByStepMode={stepByStepMode}
         setStepByStepMode={setStepByStepMode}
       />
-      <Sorting />
+      <Sorting stepByStepMode={stepByStepMode} />
       <LinkedList stepByStepMode={stepByStepMode} />
       <MaxHeap stepByStepMode={stepByStepMode} />
       <MinHeap stepByStepMode={stepByStepMode} />
