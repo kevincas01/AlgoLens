@@ -181,3 +181,7 @@ button:disabled {
   background-color: #61dafb;
 }
 
+.sort-bar.active {
+  background-color: red; /* Highlight color */
+}
+
