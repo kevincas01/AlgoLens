@@ -21,10 +21,9 @@ const Sorting = ({ stepByStepMode }) => {
 
   useEffect(() => {
     if (!stepByStepMode && steps.length > 0) {
-      console.log("hereeeee");
       const intervalId = setInterval(() => {
         executeNextStep();
-      }, 100); // Execute every 500ms
+      }, 50); // Execute every 500ms
 
       // Clear the interval when all steps are executed or if the mode is changed
       if (currentStep > steps.length || steps.length == 0) {
@@ -41,7 +40,6 @@ const Sorting = ({ stepByStepMode }) => {
 
       if (step.type === "compare") {
         const [index1, index2] = step.indices;
-        console.log("Comparing:", index1, index2);
         // Add visual highlight logic here if needed
       }
 
@@ -49,7 +47,6 @@ const Sorting = ({ stepByStepMode }) => {
         const newArr = [...array];
         newArr[step.index] = step.value;
         setArray(newArr);
-        console.log("Overwriting index", step.index, "with", step.value);
       }
 
       setCurrentStep((prevStep) => prevStep + 1);
@@ -116,7 +113,6 @@ const Sorting = ({ stepByStepMode }) => {
     const newSteps = mergeSort(array);
     setSteps(newSteps);
     setCurrentStep(0);
-    console.log(newSteps);
   };
 
   return (
@@ -129,9 +125,18 @@ const Sorting = ({ stepByStepMode }) => {
               className={`sort-bar ${
                 steps[currentStep]?.type === "compare" &&
                 steps[currentStep].indices.includes(index)
-                  ? "active"
+                  ? "active-compare"
                   : ""
-              }`}
+              }
+
+              ${
+                steps[currentStep]?.type === "overwrite" &&
+                steps[currentStep]?.index == index+1
+                  ? "active-overwrite"
+                  : ""
+              }
+              
+              `}
               style={{ height: element + "%" }}
             ></div>
           );

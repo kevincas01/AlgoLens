@@ -189,8 +189,14 @@ button:disabled {
 .sort-bar {
   width: 5px;
   background-color: #61dafb;
+
 }
 
-.sort-bar.active {
-  background-color: red; /* Highlight color */
+.sort-bar.active-compare {
+  background-color: red; 
+}
+
+
+.sort-bar.active-overwrite {
+  background-color: green; 
 }
