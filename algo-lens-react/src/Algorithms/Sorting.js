@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-const Sorting = () => {
+const Sorting = ({ stepByStepMode }) => {
   const [array, setArray] = useState([]);
+  const [steps, setSteps] = useState([]);
+  const [currentStep, setCurrentStep] = useState(0);
 
   const MAX_BARS = 100;
+
   const getNewArray = () => {
     let newArray = [];
     for (let i = 0; i < MAX_BARS; i++) {
@@ -16,6 +19,106 @@ const Sorting = () => {
     getNewArray();
   }, []);
 
+  useEffect(() => {
+    if (!stepByStepMode && steps.length > 0) {
+      console.log("hereeeee");
+      const intervalId = setInterval(() => {
+        executeNextStep();
+      }, 100); // Execute every 500ms
+
+      // Clear the interval when all steps are executed or if the mode is changed
+      if (currentStep > steps.length || steps.length == 0) {
+        clearInterval(intervalId);
+      }
+
+      return () => clearInterval(intervalId);
+    }
+  }, [stepByStepMode, currentStep, steps]);
+
+  const executeNextStep = () => {
+    if (currentStep < steps.length && steps.length !== 0) {
+      const step = steps[currentStep];
+
+      if (step.type === "compare") {
+        const [index1, index2] = step.indices;
+        console.log("Comparing:", index1, index2);
+        // Add visual highlight logic here if needed
+      }
+
+      if (step.type === "overwrite") {
+        const newArr = [...array];
+        newArr[step.index] = step.value;
+        setArray(newArr);
+        console.log("Overwriting index", step.index, "with", step.value);
+      }
+
+      setCurrentStep((prevStep) => prevStep + 1);
+    }
+  };
+
+  const mergeSort = (arr) => {
+    let tempSteps = [];
+    let sorted = arr.slice();
+
+    const merge2 = (leftIndex1, rightIndex1, leftIndex2, rightIndex2) => {
+      let temp = [];
+      let i = leftIndex1,
+        j = leftIndex2;
+
+      while (i <= rightIndex1 && j <= rightIndex2) {
+        tempSteps.push({ type: "compare", indices: [i, j] }); // Compare
+
+        if (sorted[i] < sorted[j]) {
+          temp.push(sorted[i]);
+          i++;
+        } else {
+          temp.push(sorted[j]);
+          j++;
+        }
+      }
+
+      while (i <= rightIndex1) {
+        tempSteps.push({ type: "compare", indices: [i, i] }); // Single element left
+        temp.push(sorted[i]);
+        i++;
+      }
+
+      while (j <= rightIndex2) {
+        tempSteps.push({ type: "compare", indices: [j, j] });
+        temp.push(sorted[j]);
+        j++;
+      }
+
+      for (let k = 0; k < temp.length; k++) {
+        tempSteps.push({
+          type: "overwrite",
+          index: leftIndex1 + k,
+          value: temp[k],
+        });
+        sorted[leftIndex1 + k] = temp[k];
+      }
+    };
+
+    const divide2 = (leftIndex, rightIndex) => {
+      if (leftIndex >= rightIndex) return;
+
+      const mid = Math.floor((leftIndex + rightIndex) / 2);
+      divide2(leftIndex, mid);
+      divide2(mid + 1, rightIndex);
+      merge2(leftIndex, mid, mid + 1, rightIndex);
+    };
+
+    divide2(0, arr.length - 1);
+    return tempSteps;
+  };
+
+  const startMergeSort = () => {
+    const newSteps = mergeSort(array);
+    setSteps(newSteps);
+    setCurrentStep(0);
+    console.log(newSteps);
+  };
+
   return (
     <div className="sorting-visualization">
       <div className="bars-wrapper">
@@ -23,13 +126,19 @@ const Sorting = () => {
           return (
             <div
               key={index}
-              className="sort-bar"
+              className={`sort-bar ${
+                steps[currentStep]?.type === "compare" &&
+                steps[currentStep].indices.includes(index)
+                  ? "active"
+                  : ""
+              }`}
               style={{ height: element + "%" }}
             ></div>
           );
         })}
       </div>
       <button onClick={() => getNewArray()}>Reset Array</button>
+      <button onClick={startMergeSort}>Start Merge Sort</button>
     </div>
   );
 };
