@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useRef, useState } from "react";
+const MIN_BAR_WIDTH = 20; // Minimum width of each bar in pixels
+const BAR_MARGIN = 4;
 const Sorting = ({ stepByStepMode }) => {
+  const containerRef = useRef(null);
   const [array, setArray] = useState([]);
   const [stepsToTake, setStepsToTake] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
@@ -15,8 +17,22 @@ const Sorting = ({ stepByStepMode }) => {
 
     setArray(newArray);
   };
+  const calculateMaxBars = () => {
+    const containerWidth = containerRef.current.offsetWidth-50; // Get actual width
+    const barTotalWidth = MIN_BAR_WIDTH + BAR_MARGIN; // Bar width + spacing
+    return Math.floor(containerWidth / barTotalWidth); // Max bars that fit
+  };
+
   useEffect(() => {
-    getNewArray();
+    const handleResize = () => {
+      const maxBars = calculateMaxBars();
+      getNewArray(maxBars);
+    };
+
+    handleResize(); // Initial calculation on mount
+
+    window.addEventListener("resize", handleResize); // Recalculate on window resize
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -117,7 +133,7 @@ const Sorting = ({ stepByStepMode }) => {
 
   return (
     <div className="sorting-visualization">
-      <div className="bars-wrapper">
+      <div className="bars-wrapper" ref={containerRef}>
         {array.map((element, index) => {
           return (
             <div
@@ -131,13 +147,19 @@ const Sorting = ({ stepByStepMode }) => {
 
               ${
                 stepsToTake[currentStep]?.type === "overwrite" &&
-                stepsToTake[currentStep]?.index == index+1
+                stepsToTake[currentStep]?.index == index + 1
                   ? "active-overwrite"
                   : ""
               }
               
               `}
-              style={{ height: element + "%" }}
+              style={{
+                height: `${element}%`,
+                width: `${MIN_BAR_WIDTH}px`,
+                margin: `0 ${BAR_MARGIN / 2}px`,
+                backgroundColor: "#3498db",
+                transition: "height 0.3s ease",
+              }}
             ></div>
           );
         })}
