@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 const Sorting = ({ stepByStepMode }) => {
   const [array, setArray] = useState([]);
-  const [steps, setSteps] = useState([]);
+  const [stepsToTake, setStepsToTake] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
 
   const MAX_BARS = 100;
@@ -20,23 +20,23 @@ const Sorting = ({ stepByStepMode }) => {
   }, []);
 
   useEffect(() => {
-    if (!stepByStepMode && steps.length > 0) {
+    if (!stepByStepMode && stepsToTake.length > 0) {
       const intervalId = setInterval(() => {
         executeNextStep();
       }, 50); // Execute every 500ms
 
-      // Clear the interval when all steps are executed or if the mode is changed
-      if (currentStep > steps.length || steps.length == 0) {
+      // Clear the interval when all stepsToTake are executed or if the mode is changed
+      if (currentStep > stepsToTake.length || stepsToTake.length == 0) {
         clearInterval(intervalId);
       }
 
       return () => clearInterval(intervalId);
     }
-  }, [stepByStepMode, currentStep, steps]);
+  }, [stepByStepMode, currentStep, stepsToTake]);
 
   const executeNextStep = () => {
-    if (currentStep < steps.length && steps.length !== 0) {
-      const step = steps[currentStep];
+    if (currentStep < stepsToTake.length && stepsToTake.length !== 0) {
+      const step = stepsToTake[currentStep];
 
       if (step.type === "compare") {
         const [index1, index2] = step.indices;
@@ -111,7 +111,7 @@ const Sorting = ({ stepByStepMode }) => {
 
   const startMergeSort = () => {
     const newSteps = mergeSort(array);
-    setSteps(newSteps);
+    setStepsToTake(newSteps);
     setCurrentStep(0);
   };
 
@@ -123,15 +123,15 @@ const Sorting = ({ stepByStepMode }) => {
             <div
               key={index}
               className={`sort-bar ${
-                steps[currentStep]?.type === "compare" &&
-                steps[currentStep].indices.includes(index)
+                stepsToTake[currentStep]?.type === "compare" &&
+                stepsToTake[currentStep].indices.includes(index)
                   ? "active-compare"
                   : ""
               }
 
               ${
-                steps[currentStep]?.type === "overwrite" &&
-                steps[currentStep]?.index == index+1
+                stepsToTake[currentStep]?.type === "overwrite" &&
+                stepsToTake[currentStep]?.index == index+1
                   ? "active-overwrite"
                   : ""
               }
