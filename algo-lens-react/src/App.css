@@ -87,7 +87,6 @@ button:disabled {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
 }
 
 .settings-radio-groups-container {
@@ -178,26 +177,32 @@ button:disabled {
 }
 
 .bars-wrapper {
-  margin: auto;
+
   display: flex;
-  gap: 2px;
+  gap: 3px;
   align-items: end;
   justify-content: center;
-  width: 75vw;
+  width: 100vw;
   height: 75vh;
 }
 
 .sort-bar {
   width: 5px;
   background-color: #61dafb;
-
 }
 
 .sort-bar.active-compare {
-  background-color: red; 
+  background-color: red;
 }
 
+.sort-bar.active-swap {
+  background-color: yellow;
+}
 
 .sort-bar.active-overwrite {
-  background-color: green; 
+  background-color: green;
+}
+
+.sort-bar.pivot {
+  background-color: orange;
 }
