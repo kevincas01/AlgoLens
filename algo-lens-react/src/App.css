@@ -183,6 +183,7 @@ button:disabled {
   gap: 2px;
   align-items: end;
   justify-content: center;
+  width: 75vw;
   height: 75vh;
 }
 

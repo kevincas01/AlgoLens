@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-const MIN_BAR_WIDTH = 20; // Minimum width of each bar in pixels
+const MIN_BAR_WIDTH = 25; // Minimum width of each bar in pixels
 const BAR_MARGIN = 4;
 const Sorting = ({ stepByStepMode }) => {
   const containerRef = useRef(null);
@@ -12,13 +12,13 @@ const Sorting = ({ stepByStepMode }) => {
   const getNewArray = () => {
     let newArray = [];
     for (let i = 0; i < MAX_BARS; i++) {
-      newArray.push(Math.floor(Math.random(1) * 100));
+      newArray.push(Math.ceil(Math.random(1) * 100));
     }
 
     setArray(newArray);
   };
   const calculateMaxBars = () => {
-    const containerWidth = containerRef.current.offsetWidth-50; // Get actual width
+    const containerWidth = containerRef.current.offsetWidth; // Get actual width
     const barTotalWidth = MIN_BAR_WIDTH + BAR_MARGIN; // Bar width + spacing
     return Math.floor(containerWidth / barTotalWidth); // Max bars that fit
   };
@@ -53,11 +53,6 @@ const Sorting = ({ stepByStepMode }) => {
   const executeNextStep = () => {
     if (currentStep < stepsToTake.length && stepsToTake.length !== 0) {
       const step = stepsToTake[currentStep];
-
-      if (step.type === "compare") {
-        const [index1, index2] = step.indices;
-        // Add visual highlight logic here if needed
-      }
 
       if (step.type === "overwrite") {
         const newArr = [...array];
@@ -156,9 +151,7 @@ const Sorting = ({ stepByStepMode }) => {
               style={{
                 height: `${element}%`,
                 width: `${MIN_BAR_WIDTH}px`,
-                margin: `0 ${BAR_MARGIN / 2}px`,
-                backgroundColor: "#3498db",
-                transition: "height 0.3s ease",
+                minWidth:"5px"
               }}
             ></div>
           );
