@@ -174,10 +174,10 @@ button:disabled {
   justify-items: center;
   align-content: center;
   width: 100vw;
+  padding: 20px 0px;
 }
 
 .bars-wrapper {
-
   display: flex;
   gap: 3px;
   align-items: end;
