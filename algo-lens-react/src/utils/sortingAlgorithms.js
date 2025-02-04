@@ -36,6 +36,7 @@ export const mergeSort = (arr) => {
         type: "overwrite",
         index: leftIndex1 + k,
         value: temp[k],
+        oldValue: sorted[leftIndex1 + k],
       });
       sorted[leftIndex1 + k] = temp[k];
     }
