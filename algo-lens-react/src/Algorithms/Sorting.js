@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { mergeSort, quickSort } from "../utils/sortingAlgorithms";
+import { heapSort, mergeSort, quickSort } from "../utils/sortingAlgorithms";
 const MIN_BAR_WIDTH = 5;
 const BAR_MARGIN = 4;
 const Sorting = ({ stepByStepMode }) => {
@@ -98,6 +98,13 @@ const Sorting = ({ stepByStepMode }) => {
     setStepsToExecute(newSteps);
     setCurrentStep(0);
   };
+  
+  const startHeapSort = () => {
+    setIsSortable(false);
+    const newSteps = heapSort(array);
+    setStepsToExecute(newSteps);
+    setCurrentStep(0);
+  };
 
   return (
     <div className="sorting-visualization">
@@ -141,6 +148,9 @@ const Sorting = ({ stepByStepMode }) => {
       </button>
       <button disabled={!isSortable} onClick={startQuickSort}>
         Quick Sort
+      </button>
+      <button disabled={!isSortable} onClick={startHeapSort}>
+        Heap Sort
       </button>
       {stepByStepMode && stepsToExecute.length > 0 && (
         <>
