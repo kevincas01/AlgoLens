@@ -95,7 +95,6 @@ const Sorting = ({ stepByStepMode }) => {
   const startQuickSort = () => {
     setIsSortable(false);
     const newSteps = quickSort(array);
-    console.log(newSteps);
     setStepsToExecute(newSteps);
     setCurrentStep(0);
   };
@@ -128,12 +127,9 @@ const Sorting = ({ stepByStepMode }) => {
                ${
                  stepsToExecute[currentStep]?.pivotIndex == index ? "pivot" : ""
                }
-              
               `}
               style={{
                 height: `${element}%`,
-                width: `${MIN_BAR_WIDTH}px`,
-                minWidth: "5px",
               }}
             ></div>
           );
