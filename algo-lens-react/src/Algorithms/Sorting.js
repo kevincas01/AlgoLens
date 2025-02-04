@@ -51,6 +51,26 @@ const Sorting = ({ stepByStepMode }) => {
     }
   }, [stepByStepMode, currentStep, stepsToExecute]);
 
+  const executePreviousStep = () => {
+    if (currentStep <= stepsToExecute.length) {
+      const step = stepsToExecute[currentStep-1];
+
+      if (step.type === "overwrite") {
+        const newArr = [...array];
+        newArr[step.index] = step.oldValue;;
+        setArray(newArr);
+      }
+      if (step.type === "swap") {
+        const newArr = [...array];
+        const [i, j] = step.indices;
+        // Swap the elements
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+        setArray(newArr);
+      }
+
+      setCurrentStep((prevStep) => prevStep - 1);
+    }
+  };
   const executeNextStep = () => {
     if (currentStep < stepsToExecute.length && stepsToExecute.length !== 0) {
       const step = stepsToExecute[currentStep];
@@ -98,7 +118,7 @@ const Sorting = ({ stepByStepMode }) => {
     setStepsToExecute(newSteps);
     setCurrentStep(0);
   };
-  
+
   const startHeapSort = () => {
     setIsSortable(false);
     const newSteps = heapSort(array);
@@ -108,6 +128,7 @@ const Sorting = ({ stepByStepMode }) => {
 
   return (
     <div className="sorting-visualization">
+      <h1>Sorting Visualizer</h1>
       <div className="bars-wrapper" ref={containerRef}>
         {array.map((element, index) => {
           return (
@@ -121,7 +142,7 @@ const Sorting = ({ stepByStepMode }) => {
               }
               ${
                 stepsToExecute[currentStep]?.type === "overwrite" &&
-                stepsToExecute[currentStep]?.index == index + 1
+                stepsToExecute[currentStep]?.index == index 
                   ? "active-overwrite"
                   : ""
               }
@@ -154,7 +175,7 @@ const Sorting = ({ stepByStepMode }) => {
       </button>
       {stepByStepMode && stepsToExecute.length > 0 && (
         <>
-          <button disabled={currentStep === 0}>Previous Step</button>
+          <button disabled={currentStep === 0} onClick={executePreviousStep}>Previous Step</button>
           <button onClick={executeNextStep}>
             {currentStep === stepsToExecute.length - 1 ? "Finish" : "Next Step"}
           </button>
