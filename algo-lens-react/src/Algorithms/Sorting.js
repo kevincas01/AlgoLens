@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { mergeSort, quickSort } from "../utils/sortingAlgorithms";
-const MIN_BAR_WIDTH = 25; // Minimum width of each bar in pixels
+const MIN_BAR_WIDTH = 5;
 const BAR_MARGIN = 4;
 const Sorting = ({ stepByStepMode }) => {
   const containerRef = useRef(null);
@@ -8,11 +8,11 @@ const Sorting = ({ stepByStepMode }) => {
   const [stepsToExecute, setStepsToExecute] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
 
-  const MAX_BARS = 100;
+  const [isSortable, setIsSortable] = useState(true);
 
-  const getNewArray = () => {
+  const getNewArray = (maxBars) => {
     let newArray = [];
-    for (let i = 0; i < MAX_BARS; i++) {
+    for (let i = 0; i < maxBars; i++) {
       newArray.push(Math.ceil(Math.random(1) * 100));
     }
 
@@ -70,15 +70,30 @@ const Sorting = ({ stepByStepMode }) => {
 
       setCurrentStep((prevStep) => prevStep + 1);
     }
+
+    if (currentStep + 1 >= stepsToExecute.length) {
+      setCurrentStep(0);
+      setStepsToExecute([]);
+    }
+  };
+
+  const reset = () => {
+    const maxBars = calculateMaxBars();
+    getNewArray(maxBars);
+    setCurrentStep(0);
+    setStepsToExecute([]);
+    setIsSortable(true);
   };
 
   const startMergeSort = () => {
+    setIsSortable(false);
     const newSteps = mergeSort(array);
     setStepsToExecute(newSteps);
     setCurrentStep(0);
   };
 
   const startQuickSort = () => {
+    setIsSortable(false);
     const newSteps = quickSort(array);
     console.log(newSteps);
     setStepsToExecute(newSteps);
@@ -98,20 +113,21 @@ const Sorting = ({ stepByStepMode }) => {
                   ? "active-compare"
                   : ""
               }
-
               ${
                 stepsToExecute[currentStep]?.type === "overwrite" &&
                 stepsToExecute[currentStep]?.index == index + 1
                   ? "active-overwrite"
                   : ""
               }
-
               ${
                 stepsToExecute[currentStep]?.type === "swap" &&
                 stepsToExecute[currentStep]?.indices.includes(index)
                   ? "active-swap"
                   : ""
               }
+               ${
+                 stepsToExecute[currentStep]?.pivotIndex == index ? "pivot" : ""
+               }
               
               `}
               style={{
@@ -123,14 +139,18 @@ const Sorting = ({ stepByStepMode }) => {
           );
         })}
       </div>
-      <button onClick={() => getNewArray()}>Reset Array</button>
-      <button onClick={startMergeSort}>Merge Sort</button>
-      <button onClick={startQuickSort}>Quick Sort</button>
+      <button onClick={reset}>Reset Array</button>
+      <button disabled={!isSortable} onClick={startMergeSort}>
+        Merge Sort
+      </button>
+      <button disabled={!isSortable} onClick={startQuickSort}>
+        Quick Sort
+      </button>
       {stepByStepMode && stepsToExecute.length > 0 && (
         <>
           <button disabled={currentStep === 0}>Previous Step</button>
           <button onClick={executeNextStep}>
-            {currentStep === stepsToExecute.length ? "Finish" : "Next Step"}
+            {currentStep === stepsToExecute.length - 1 ? "Finish" : "Next Step"}
           </button>
         </>
       )}
