@@ -58,9 +58,10 @@ export const quickSort = (arr) => {
   let tempSteps = [];
 
   let sorted = arr.slice();
-  const swap = (i, j) => {
+  const swap = (i, j, pivot) => {
+    if (i == j) return;
     [sorted[i], sorted[j]] = [sorted[j], sorted[i]];
-    tempSteps.push({ type: "swap", indices: [i, j] });
+    tempSteps.push({ type: "swap", indices: [i, j], pivotIndex: pivot });
   };
 
   const partition = (leftIndex, rightIndex) => {
@@ -68,14 +69,19 @@ export const quickSort = (arr) => {
     let currLowIndex = leftIndex - 1;
 
     for (let i = leftIndex; i < rightIndex; i++) {
-      tempSteps.push({ type: "compare", indices: [i, rightIndex] }); // Compare
+      tempSteps.push({
+        type: "compare",
+        indices: [i, rightIndex],
+        pivotIndex: rightIndex,
+      }); // Compare
       if (sorted[i] <= pivotElement) {
         currLowIndex++;
-        swap(i, currLowIndex); // Correct swap
+
+        swap(i, currLowIndex, rightIndex); // Correct swap
       }
     }
 
-    swap(currLowIndex + 1, rightIndex); // Move pivot to the correct position
+    swap(currLowIndex + 1, rightIndex, rightIndex); // Move pivot to the correct position
     return currLowIndex + 1;
   };
 
