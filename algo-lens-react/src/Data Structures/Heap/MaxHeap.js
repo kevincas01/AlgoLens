@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import HeapButtons from "../../Components/HeapButtons";
 import { calculateNodePositions, getLeftChildIndex, getParentIndex, getRightChildIndex, MAX_SIZE } from "../../utils/nodeArrays";
 import HeapSvg from "../../Components/HeapSvg";
-
 const MaxHeap = ({ stepByStepMode }) => {
   const [heap, setHeap] = useState([]);
   const [currentStep, setCurrentStep] = useState(0); // Tracks the current step of the process
@@ -131,8 +130,6 @@ const MaxHeap = ({ stepByStepMode }) => {
     }
   };
 
-  const peek = () => (heap.length === 0 ? null : heap[0]);
-
   const reset = () => {
     setHeap([]);
     setCurrentStep(0);
@@ -142,13 +139,7 @@ const MaxHeap = ({ stepByStepMode }) => {
     setAnimatedLineIndex(null);
   };
 
-  // SVG dimensions
-  const svgWidth = 700;
-  const svgHeight = 500;
 
-  // Calculate node positions
-
-  const nodePositions = calculateNodePositions(heap, svgWidth);
 
   return (
     <div style={{ textAlign: "center" }}>

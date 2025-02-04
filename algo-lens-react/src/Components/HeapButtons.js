@@ -26,7 +26,7 @@ const HeapButtons = ({
         onClick={() => remove()}
         disabled={heap.length === 0} // Disabled when heap is empty
       >
-        Remove Min
+        Remove
       </button>
 
       {stepByStepMode && stepsToExecute.length > 0 && (
