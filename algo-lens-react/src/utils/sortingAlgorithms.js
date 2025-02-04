@@ -95,3 +95,59 @@ export const quickSort = (arr) => {
   sort(0, sorted.length - 1);
   return tempSteps;
 };
+
+export const heapSort = (arr) => {
+  let n = arr.length;
+  let sorted = arr.slice();
+  let tempSteps = [];
+
+  const swap = (i, j) => {
+    [sorted[i], sorted[j]] = [sorted[j], sorted[i]];
+    tempSteps.push({ type: "swap", indices: [i, j] });
+  };
+
+  const heapify = (n, i) => {
+    // Initialize largest as root
+    let largest = i;
+
+    let l = 2 * i + 1;
+    let r = 2 * i + 2;
+
+    // If left child is larger than root
+    if (l < n) {
+      tempSteps.push({ type: "compare", indices: [largest, l] });
+      if (sorted[l] > sorted[largest]) {
+        largest = l;
+      }
+    }
+
+    // Compare with right child if it exists
+    if (r < n) {
+      tempSteps.push({ type: "compare", indices: [largest, r] });
+      if (sorted[r] > sorted[largest]) {
+        largest = r;
+      }
+    }
+
+    // If largest is not root
+    if (largest !== i) {
+      swap(i, largest);
+
+      // Recursively heapify the affected sub-tree
+      heapify(n, largest);
+    }
+  };
+
+  // Build heap (rearrange array)
+  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+    heapify(n, i);
+  }
+
+  // One by one extract an element from heap
+  for (let i = n - 1; i > 0; i--) {
+    swap(0, i);
+    // Call max heapify on the reduced heap
+    heapify(i, 0);
+  }
+  return tempSteps;
+};
