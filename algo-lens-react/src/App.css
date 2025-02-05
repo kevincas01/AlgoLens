@@ -230,10 +230,18 @@ button:disabled {
 
 
 .starting-point{
-  background-color: green;
+  background-color: yellow;
   content: "1";
 }
 .ending-point{
   background-color: blue;
   content: "2";
+}
+
+
+.enqueued-cell {
+  background-color: green;
+}
+.visited-cell {
+  background-color: cyan;
 }
