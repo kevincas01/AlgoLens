@@ -89,3 +89,68 @@ export const bfs = (matrix, startingPoint, endingPoint) => {
 
   return tempSteps;
 };
+
+export const dfs = (matrix, startingPoint, endingPoint) => {
+  const n = matrix.length;
+  const visitedMatrix = Array.from({ length: n }, () => Array(n).fill(false));
+  const directions = [
+    { x: -1, y: 0 }, // Up
+    { x: 0, y: 1 }, // Right
+    { x: 1, y: 0 }, // Down
+    { x: 0, y: -1 }, // Left
+  ];
+
+  const tempSteps = []; // Track steps for visualization
+  const parentMap = new Map();
+  let pathFound = false;
+
+  const dfsRecurse = (currIndices) => {
+    if (pathFound) return; // Stop further recursion if path is found
+
+    visitedMatrix[currIndices.x][currIndices.y] = true;
+    tempSteps.push({
+      type: "enqueue",
+      indices: { x: currIndices.x, y: currIndices.y },
+      childrenIndices: [],
+    });
+
+    if (currIndices.x === endingPoint.x && currIndices.y === endingPoint.y) {
+      const path = getPathFromParentMap(parentMap, startingPoint, endingPoint);
+      tempSteps.push({
+        type: "showPath",
+        path: path,
+      });
+      pathFound = true;
+      return;
+    }
+
+    const children = [];
+    for (const dir of directions) {
+      const newX = currIndices.x + dir.x;
+      const newY = currIndices.y + dir.y;
+
+      // Boundary and visited check
+      if (
+        !pathFound &&
+        newX >= 0 &&
+        newX < n &&
+        newY >= 0 &&
+        newY < n &&
+        !visitedMatrix[newX][newY] &&
+        matrix[newX][newY] // Ensure it's a walkable cell
+      ) {
+        parentMap.set(`${newX},${newY}`, currIndices);
+        children.push({ x: newX, y: newY });
+        tempSteps.push({
+          type: "enqueue",
+          indices: { x: currIndices.x, y: currIndices.y },
+          childrenIndices: [{ x: newX, y: newY }],
+        });
+        dfsRecurse({ x: newX, y: newY });
+      }
+    }
+  };
+
+  dfsRecurse(startingPoint);
+  return tempSteps;
+};
