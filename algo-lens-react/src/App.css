@@ -206,3 +206,34 @@ button:disabled {
 .sort-bar.pivot {
   background-color: orange;
 }
+
+.grid {
+  margin: auto;
+  display: grid;
+  gap: 1px;
+  width: fit-content;
+  border:black solid 1px;
+  background-color: black;
+}
+.row {
+  display: flex;
+  gap: 1px;
+}
+.cell {
+  width: 20px;
+  height: 20px;
+  background-color: black;
+}
+.cell.white {
+  background-color: white;
+}
+
+
+.starting-point{
+  background-color: green;
+  content: "1";
+}
+.ending-point{
+  background-color: blue;
+  content: "2";
+}

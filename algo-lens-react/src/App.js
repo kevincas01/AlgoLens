@@ -8,6 +8,7 @@ import Stack from "./Data Structures/Stack/Stack";
 import Queue from "./Data Structures/Queue/Queue";
 import LinkedList from "./Data Structures/LinkedList/LinkedList";
 import Sorting from "./Algorithms/Sorting";
+import PathFinding from "./Algorithms/PathFinding";
 
 function App() {
   const [stepByStepMode, setStepByStepMode] = useState(false);
@@ -17,6 +18,7 @@ function App() {
         stepByStepMode={stepByStepMode}
         setStepByStepMode={setStepByStepMode}
       />
+      <PathFinding stepByStepMode={stepByStepMode} />
       <Sorting stepByStepMode={stepByStepMode} />
       <LinkedList stepByStepMode={stepByStepMode} />
       <MaxHeap stepByStepMode={stepByStepMode} />
