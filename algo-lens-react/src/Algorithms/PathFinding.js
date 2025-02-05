@@ -58,6 +58,25 @@ const PathFinding = ({ stepByStepMode }) => {
 
   const executePreviousStep = () => {
     if (currentStep <= stepsToExecute.length) {
+      const { type, indices, childrenIndices, path } =
+        stepsToExecute[currentStep - 1];
+      if (type == "enqueue") {
+        setMatrixIndicesStates((prevState) => {
+          const newState = prevState.map((row) => row.slice()); // Clone the matrix
+
+          for (const child of childrenIndices) {
+            newState[child.x][child.y] = "null";
+          }
+          if (
+            !(indices.x === startingPoint.x && indices.y === startingPoint.y)
+          ) {
+            newState[indices.x][indices.y] = "enqueued";
+          }
+
+          return newState;
+        });
+      }
+
       setCurrentStep((prevStep) => prevStep - 1);
     }
   };
