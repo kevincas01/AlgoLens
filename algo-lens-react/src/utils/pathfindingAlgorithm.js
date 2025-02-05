@@ -1,5 +1,29 @@
 export const findRandom = (low, high) => {
-  return Math.floor(Math.random() * (high - low )) + low;
+  return Math.floor(Math.random() * (high - low)) + low;
+};
+
+export const getPathFromParentMap = (parentMap, startingPoint, endingPoint) => {
+  const path = [];
+  let currentNode = `${endingPoint.x},${endingPoint.y}`;
+
+  // Traverse from ending point to starting point
+  while (currentNode) {
+    // Extract the coordinates from the string and push to the path
+    const [x, y] = currentNode.split(",").map(Number);
+    path.push({ x, y });
+
+    // Stop if we reach the starting point
+    if (x === startingPoint.x && y === startingPoint.y) {
+      break;
+    }
+
+    // Get the parent node and update currentNode
+    const parent = parentMap.get(currentNode);
+    currentNode = parent ? `${parent.x},${parent.y}` : null;
+  }
+
+  // Reverse to get the path from start to end
+  return path.reverse();
 };
 
 export const bfs = (matrix, startingPoint, endingPoint) => {
@@ -25,6 +49,12 @@ export const bfs = (matrix, startingPoint, endingPoint) => {
     // Check if we reached the ending point
 
     if (currIndices.x === endingPoint.x && currIndices.y === endingPoint.y) {
+      const path = getPathFromParentMap(parentMap, startingPoint, endingPoint);
+
+      tempSteps.push({
+        type: "showPath",
+        path: path,
+      });
       return tempSteps;
     }
 
@@ -57,6 +87,5 @@ export const bfs = (matrix, startingPoint, endingPoint) => {
     });
   }
 
-  console.log(tempSteps);
   return tempSteps;
 };
