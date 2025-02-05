@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { findRandom } from "../utils/pathfindingAlgorithm";
+import { bfs, findRandom } from "../utils/pathfindingAlgorithm";
 
 const PathFinding = ({ stepByStepMode }) => {
   const N = 25;
   const [matrix, setMatrix] = useState([]);
 
-  const [checkedMatrixIndices, setCheckedMatrixIndices] = useState([]);
+  const [matrixIndicesStates, setMatrixIndicesStates] = useState(
+    Array.from({ length: N }, () => Array(N).fill(null))
+  );
   const [currentStep, setCurrentStep] = useState(0);
 
   const [stepsToExecute, setStepsToExecute] = useState([]);
@@ -19,6 +21,20 @@ const PathFinding = ({ stepByStepMode }) => {
     x: findRandom(0, N),
     y: findRandom(0, N),
   });
+
+  useEffect(() => {
+    if (!stepByStepMode && stepsToExecute.length > 0) {
+      const intervalId = setInterval(() => {
+        executeNextStep();
+      }, 50); 
+
+      if (currentStep > stepsToExecute.length || stepsToExecute.length == 0) {
+        clearInterval(intervalId);
+      }
+
+      return () => clearInterval(intervalId);
+    }
+  }, [stepByStepMode, currentStep, stepsToExecute]);
 
   const getNewArray = () => {
     const newArray2d = [];
@@ -42,6 +58,20 @@ const PathFinding = ({ stepByStepMode }) => {
 
   const executeNextStep = () => {
     if (currentStep < stepsToExecute.length && stepsToExecute.length !== 0) {
+      const { type, indices, childrenIndices } = stepsToExecute[currentStep];
+
+      setMatrixIndicesStates((prevState) => {
+        const newState = prevState.map((row) => row.slice()); // Clone the matrix
+
+        console.log(type, indices);
+        for (const child of childrenIndices) {
+          newState[child.x][child.y] = "enqueued";
+        }
+        newState[indices.x][indices.y] = "visited";
+
+        return newState;
+      });
+
       setCurrentStep((prevStep) => prevStep + 1);
     }
 
@@ -62,7 +92,17 @@ const PathFinding = ({ stepByStepMode }) => {
       x: findRandom(0, N),
       y: findRandom(0, N),
     });
+    setCurrentStep(0);
+    setStepsToExecute([]);
+    setMatrixIndicesStates( Array.from({ length: N }, () => Array(N).fill(null)))
   };
+
+  const startBFS = () => {
+    const newSteps = bfs(matrix, startingPoint, endingPoint);
+    setStepsToExecute(newSteps);
+    setCurrentStep(0);
+  };
+
   return (
     <div>
       <h1>Sorting Visualizer</h1>
@@ -84,12 +124,29 @@ const PathFinding = ({ stepByStepMode }) => {
                 cellClass = "ending-point";
               }
 
+              const state = matrixIndicesStates[rowIndex][colIndex];
+              if (state === "enqueued") {
+                cellClass = "enqueued-cell";
+              } else if (state === "visited") {
+                cellClass = "visited-cell";
+              }
+
               return <div key={colIndex} className={`cell ${cellClass}`}></div>;
             })}
           </div>
         ))}
       </div>
       <button onClick={reset}>Reset Array</button>
+      <button onClick={startBFS}>Breadth First Search</button>
+
+      {stepByStepMode && stepsToExecute.length > 0 && (
+        <>
+
+          <button onClick={executeNextStep}>
+            {currentStep === stepsToExecute.length - 1 ? "Finish" : "Next Step"}
+          </button>
+        </>
+      )}
     </div>
   );
 };
