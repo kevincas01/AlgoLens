@@ -26,7 +26,7 @@ const PathFinding = ({ stepByStepMode }) => {
     if (!stepByStepMode && stepsToExecute.length > 0) {
       const intervalId = setInterval(() => {
         executeNextStep();
-      }, 50); 
+      }, 50);
 
       if (currentStep > stepsToExecute.length || stepsToExecute.length == 0) {
         clearInterval(intervalId);
@@ -56,21 +56,42 @@ const PathFinding = ({ stepByStepMode }) => {
     getNewArray();
   }, []);
 
+  const executePreviousStep = () => {
+    if (currentStep <= stepsToExecute.length) {
+      setCurrentStep((prevStep) => prevStep - 1);
+    }
+  };
   const executeNextStep = () => {
     if (currentStep < stepsToExecute.length && stepsToExecute.length !== 0) {
-      const { type, indices, childrenIndices } = stepsToExecute[currentStep];
+      const { type, indices, childrenIndices, path } =
+        stepsToExecute[currentStep];
 
-      setMatrixIndicesStates((prevState) => {
-        const newState = prevState.map((row) => row.slice()); // Clone the matrix
+      if (type == "enqueue") {
+        setMatrixIndicesStates((prevState) => {
+          const newState = prevState.map((row) => row.slice()); // Clone the matrix
 
-        console.log(type, indices);
-        for (const child of childrenIndices) {
-          newState[child.x][child.y] = "enqueued";
-        }
-        newState[indices.x][indices.y] = "visited";
+          console.log(type, indices);
+          for (const child of childrenIndices) {
+            newState[child.x][child.y] = "enqueued";
+          }
+          if (
+            !(indices.x === startingPoint.x && indices.y === startingPoint.y)
+          ) {
+            newState[indices.x][indices.y] = "visited";
+          }
 
-        return newState;
-      });
+          return newState;
+        });
+      } else if (type == "showPath") {
+        setMatrixIndicesStates((prevState) => {
+          const newState = prevState.map((row) => row.slice()); // Clone the matrix
+
+          for (const child of path) {
+            newState[child.x][child.y] = "path";
+          }
+          return newState;
+        });
+      }
 
       setCurrentStep((prevStep) => prevStep + 1);
     }
@@ -94,7 +115,9 @@ const PathFinding = ({ stepByStepMode }) => {
     });
     setCurrentStep(0);
     setStepsToExecute([]);
-    setMatrixIndicesStates( Array.from({ length: N }, () => Array(N).fill(null)))
+    setMatrixIndicesStates(
+      Array.from({ length: N }, () => Array(N).fill(null))
+    );
   };
 
   const startBFS = () => {
@@ -129,6 +152,8 @@ const PathFinding = ({ stepByStepMode }) => {
                 cellClass = "enqueued-cell";
               } else if (state === "visited") {
                 cellClass = "visited-cell";
+              } else if (state === "path") {
+                cellClass = "path-cell";
               }
 
               return <div key={colIndex} className={`cell ${cellClass}`}></div>;
@@ -141,7 +166,9 @@ const PathFinding = ({ stepByStepMode }) => {
 
       {stepByStepMode && stepsToExecute.length > 0 && (
         <>
-
+          <button disabled={currentStep === 0} onClick={executePreviousStep}>
+            Previous Step
+          </button>
           <button onClick={executeNextStep}>
             {currentStep === stepsToExecute.length - 1 ? "Finish" : "Next Step"}
           </button>

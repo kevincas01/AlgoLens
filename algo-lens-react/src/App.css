@@ -245,3 +245,6 @@ button:disabled {
 .visited-cell {
   background-color: cyan;
 }
+.path-cell{
+  background-color: red;
+}
