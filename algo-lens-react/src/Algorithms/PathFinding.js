@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { bfs, findRandom } from "../utils/pathfindingAlgorithm";
+import { bfs, dfs, findRandom } from "../utils/pathfindingAlgorithm";
 
 const PathFinding = ({ stepByStepMode }) => {
   const N = 25;
@@ -38,7 +38,7 @@ const PathFinding = ({ stepByStepMode }) => {
 
   const getNewArray = () => {
     const newArray2d = [];
-    const falseThreshold = 5; // Percentage chance of getting a false value
+    const falseThreshold = 15; // Percentage chance of getting a false value
 
     for (let i = 0; i < N; i++) {
       const rowArray = [];
@@ -56,6 +56,8 @@ const PathFinding = ({ stepByStepMode }) => {
     getNewArray();
   }, []);
 
+  //Cyan Visited and checked for goal destination
+  //green Next to be visited
   const executePreviousStep = () => {
     if (currentStep <= stepsToExecute.length) {
       const { type, indices, childrenIndices, path } =
@@ -89,12 +91,13 @@ const PathFinding = ({ stepByStepMode }) => {
         setMatrixIndicesStates((prevState) => {
           const newState = prevState.map((row) => row.slice()); // Clone the matrix
 
-          console.log(type, indices);
           for (const child of childrenIndices) {
-            newState[child.x][child.y] = "enqueued";
+          
+              newState[child.x][child.y] = "enqueued";
+            
           }
           if (
-            !(indices.x === startingPoint.x && indices.y === startingPoint.y)
+            !(indices?.x === startingPoint.x && indices?.y === startingPoint.y)
           ) {
             newState[indices.x][indices.y] = "visited";
           }
@@ -144,6 +147,11 @@ const PathFinding = ({ stepByStepMode }) => {
     setStepsToExecute(newSteps);
     setCurrentStep(0);
   };
+  const startDFS = () => {
+    const newSteps = dfs(matrix, startingPoint, endingPoint);
+    setStepsToExecute(newSteps);
+    setCurrentStep(0);
+  };
 
   return (
     <div>
@@ -182,6 +190,7 @@ const PathFinding = ({ stepByStepMode }) => {
       </div>
       <button onClick={reset}>Reset Array</button>
       <button onClick={startBFS}>Breadth First Search</button>
+      <button onClick={startDFS}>Depth First Search</button>
 
       {stepByStepMode && stepsToExecute.length > 0 && (
         <>
