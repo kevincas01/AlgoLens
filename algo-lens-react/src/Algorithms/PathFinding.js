@@ -1,32 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { bfs, dfs, findRandom } from "../utils/pathfindingAlgorithm";
+import {
+  bfs,
+  dfs,
+  findRandom,
+  generateMazeGrid,
+} from "../utils/pathfindingAlgorithm";
 
 const PathFinding = ({ stepByStepMode }) => {
-  const N = 25;
+  const N = 51;
   const [matrix, setMatrix] = useState([]);
 
   const [matrixIndicesStates, setMatrixIndicesStates] = useState(
     Array.from({ length: N }, () => Array(N).fill(null))
   );
+
   const [currentStep, setCurrentStep] = useState(0);
 
   const [stepsToExecute, setStepsToExecute] = useState([]);
 
-  const [startingPoint, setStartingPoint] = useState({
-    x: findRandom(0, N),
-    y: findRandom(0, N),
-  });
+  const [startingPoint, setStartingPoint] = useState(null);
 
-  const [endingPoint, setEndingPoint] = useState({
-    x: findRandom(0, N),
-    y: findRandom(0, N),
-  });
+  const [endingPoint, setEndingPoint] = useState(null);
 
   useEffect(() => {
     if (!stepByStepMode && stepsToExecute.length > 0) {
       const intervalId = setInterval(() => {
         executeNextStep();
-      }, 50);
+      }, 10);
 
       if (currentStep > stepsToExecute.length || stepsToExecute.length == 0) {
         clearInterval(intervalId);
@@ -36,24 +36,20 @@ const PathFinding = ({ stepByStepMode }) => {
     }
   }, [stepByStepMode, currentStep, stepsToExecute]);
 
-  const getNewArray = () => {
-    const newArray2d = [];
-    const falseThreshold = 15; // Percentage chance of getting a false value
-
-    for (let i = 0; i < N; i++) {
-      const rowArray = [];
-      for (let j = 0; j < N; j++) {
-        const randomValue = Math.random() * 100;
-        rowArray.push(randomValue > falseThreshold); // true for values above the threshold
-      }
-      newArray2d.push(rowArray);
-    }
-
-    setMatrix(newArray2d);
-  };
-
   useEffect(() => {
-    getNewArray();
+    const grid = generateMazeGrid(N);
+    const startX = findRandom(0, N);
+    const startY = findRandom(0, N);
+    const endX = findRandom(0, N);
+    const endY = findRandom(0, N);
+
+    // Ensure the starting and ending points are marked as true on the grid
+    grid[startX][startY] = true;
+    grid[endX][endY] = true;
+
+    setMatrix(grid);
+    setStartingPoint({ x: startX, y: startY });
+    setEndingPoint({ x: endX, y: endY });
   }, []);
 
   //Cyan Visited and checked for goal destination
@@ -92,9 +88,7 @@ const PathFinding = ({ stepByStepMode }) => {
           const newState = prevState.map((row) => row.slice()); // Clone the matrix
 
           for (const child of childrenIndices) {
-          
-              newState[child.x][child.y] = "enqueued";
-            
+            newState[child.x][child.y] = "enqueued";
           }
           if (
             !(indices?.x === startingPoint.x && indices?.y === startingPoint.y)
@@ -125,16 +119,19 @@ const PathFinding = ({ stepByStepMode }) => {
   };
 
   const reset = () => {
-    getNewArray();
-    setStartingPoint({
-      x: findRandom(0, N),
-      y: findRandom(0, N),
-    });
+    const grid = generateMazeGrid(N);
+    const startX = findRandom(0, N);
+    const startY = findRandom(0, N);
+    const endX = findRandom(0, N);
+    const endY = findRandom(0, N);
 
-    setEndingPoint({
-      x: findRandom(0, N),
-      y: findRandom(0, N),
-    });
+    // Ensure the starting and ending points are marked as true on the grid
+    grid[startX][startY] = true;
+    grid[endX][endY] = true;
+
+    setMatrix(grid);
+    setStartingPoint({ x: startX, y: startY });
+    setEndingPoint({ x: endX, y: endY });
     setCurrentStep(0);
     setStepsToExecute([]);
     setMatrixIndicesStates(
