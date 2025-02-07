@@ -84,20 +84,19 @@ const LinkedList = ({ stepByStepMode }) => {
       y2: null,
     };
     setNodePositions(positions);
-
-    if (!stepByStepMode && stepsToExecute.length > 0) {
-      const intervalId = setInterval(() => {
-        executeNextStep();
-      }, 1000);
-
-      // Clear the interval when all steps are execu ted or if the mode is changed
-      if (currentStep > stepsToExecute.length || stepsToExecute.length == 0) {
-        clearInterval(intervalId);
-      }
-
-      return () => clearInterval(intervalId);
-    }
   }, [linkedListLength]);
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      executeNextStep();
+    }, 1000);
+
+    // Clear the interval when all steps are execu ted or if the mode is changed
+    if (currentStep > stepsToExecute.length || stepsToExecute.length == 0) {
+      clearInterval(intervalId);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [stepByStepMode, currentStep, stepsToExecute]);
 
   // Remove the head node
   const remove = () => {
@@ -156,8 +155,8 @@ const LinkedList = ({ stepByStepMode }) => {
         setNodePositions((prevNodePositions) => {
           prevNodePositions[replaceIndex] = {
             ...prevNodePositions[replaceIndex],
-            x2: prevNodePositions[replaceWithIndex+1]?.x - 50,
-            y2: prevNodePositions[replaceWithIndex+1]?.y,
+            x2: prevNodePositions[replaceWithIndex + 1]?.x - 50,
+            y2: prevNodePositions[replaceWithIndex + 1]?.y,
           };
           return prevNodePositions;
         });
