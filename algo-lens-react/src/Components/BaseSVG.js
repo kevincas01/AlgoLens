@@ -8,7 +8,7 @@ const BaseSVG = ({ children, svgWidth, svgHeight }) => {
       height={svgHeight}
       style={{
         display: "block",
-        margin: "20px auto",
+        margin: "20px auto 0px auto",
         borderRadius: "15px", // Rounded corners for a sleek look
         background: "linear-gradient(135deg, #1e3c72, #2a5298)", // Modern gradient background
         boxShadow:
