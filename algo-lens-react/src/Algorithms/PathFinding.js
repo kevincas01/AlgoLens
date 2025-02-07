@@ -14,6 +14,8 @@ const PathFinding = ({ stepByStepMode }) => {
     Array.from({ length: N }, () => Array(N).fill(null))
   );
 
+  const [isPathFindable, setIsPathFindable] = useState(true);
+  const [pathFound, setPathFound] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
   const [stepsToExecute, setStepsToExecute] = useState([]);
@@ -115,6 +117,7 @@ const PathFinding = ({ stepByStepMode }) => {
     if (currentStep + 1 >= stepsToExecute.length) {
       setCurrentStep(0);
       setStepsToExecute([]);
+      setPathFound(true);
     }
   };
 
@@ -137,14 +140,25 @@ const PathFinding = ({ stepByStepMode }) => {
     setMatrixIndicesStates(
       Array.from({ length: N }, () => Array(N).fill(null))
     );
+    setPathFound(false)
+    setIsPathFindable(true);
+  };
+
+  const clearStates = () => {
+    setIsPathFindable(true);
+    setMatrixIndicesStates(
+      Array.from({ length: N }, () => Array(N).fill(null))
+    );
   };
 
   const startBFS = () => {
+    setIsPathFindable(false);
     const newSteps = bfs(matrix, startingPoint, endingPoint);
     setStepsToExecute(newSteps);
     setCurrentStep(0);
   };
   const startDFS = () => {
+    setIsPathFindable(false);
     const newSteps = dfs(matrix, startingPoint, endingPoint);
     setStepsToExecute(newSteps);
     setCurrentStep(0);
@@ -152,7 +166,7 @@ const PathFinding = ({ stepByStepMode }) => {
 
   return (
     <div>
-      <h1>Sorting Visualizer</h1>
+      <h1>Path Finding Visualizer</h1>
 
       <div className="grid">
         {matrix.map((row, rowIndex) => (
@@ -185,9 +199,11 @@ const PathFinding = ({ stepByStepMode }) => {
           </div>
         ))}
       </div>
-      <button onClick={reset}>Reset Array</button>
-      <button onClick={startBFS}>Breadth First Search</button>
-      <button onClick={startDFS}>Depth First Search</button>
+      <button onClick={reset}>Generate New</button>
+      {pathFound && <button onClick={clearStates}>Clear States</button>}
+
+      <button disabled={!isPathFindable} onClick={startBFS}>Breadth First Search</button>
+      <button disabled={!isPathFindable} onClick={startDFS}>Depth First Search</button>
 
       {stepByStepMode && stepsToExecute.length > 0 && (
         <>
