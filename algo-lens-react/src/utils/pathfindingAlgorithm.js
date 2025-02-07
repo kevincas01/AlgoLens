@@ -2,6 +2,61 @@ export const findRandom = (low, high) => {
   return Math.floor(Math.random() * (high - low)) + low;
 };
 
+export const generateRandomGrid = (n) => {
+  const grid = [];
+  const obstacleProbability = 15; // Percentage chance of placing an obstacle (false)
+
+  for (let row = 0; row < n; row++) {
+    const currentRow = [];
+    for (let col = 0; col < n; col++) {
+      const randomPercentage = Math.random() * 100;
+      currentRow.push(randomPercentage > obstacleProbability); // true for open path, false for obstacle
+    }
+    grid.push(currentRow);
+  }
+
+  return grid;
+};
+
+export const generateMazeGrid = (size) => {
+  const mazeGrid = Array.from({ length: size }, () => Array(size).fill(false)); // Initialize with all walls
+
+  const possibleDirections = [
+    [0, 2], // Down
+    [0, -2], // Up
+    [2, 0], // Right
+    [-2, 0], // Left
+  ];
+
+  const isValidCell = (row, col) => row >= 0 && col >= 0 && row < size && col < size;
+
+  const carvePath = (row, col) => {
+    mazeGrid[row][col] = true; // Mark the current cell as part of the path
+
+    // Shuffle directions to create a randomized maze
+    possibleDirections.sort(() => Math.random() - 0.5);
+
+    for (const [dRow, dCol] of possibleDirections) {
+      const nextRow = row + dRow;
+      const nextCol = col + dCol;
+      const wallRow = row + dRow / 2;
+      const wallCol = col + dCol / 2;
+
+      if (isValidCell(nextRow, nextCol) && !mazeGrid[nextRow][nextCol]) {
+        mazeGrid[wallRow][wallCol] = true; // Carve a passage through the wall
+        carvePath(nextRow, nextCol);
+      }
+    }
+  };
+
+  if (size >= 3) {
+    carvePath(0,0);
+  }
+
+  return mazeGrid;
+};
+
+
 export const getPathFromParentMap = (parentMap, startingPoint, endingPoint) => {
   const path = [];
   let currentNode = `${endingPoint.x},${endingPoint.y}`;
