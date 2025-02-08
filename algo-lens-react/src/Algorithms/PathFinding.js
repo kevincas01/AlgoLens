@@ -39,6 +39,10 @@ const PathFinding = ({ stepByStepMode }) => {
   }, [stepByStepMode, currentStep, stepsToExecute]);
 
   useEffect(() => {
+    generateNewMaze();
+  }, []);
+
+  const generateNewMaze = () => {
     const grid = generateMazeGrid(N);
     const startX = findRandom(0, N);
     const startY = findRandom(0, N);
@@ -52,7 +56,7 @@ const PathFinding = ({ stepByStepMode }) => {
     setMatrix(grid);
     setStartingPoint({ x: startX, y: startY });
     setEndingPoint({ x: endX, y: endY });
-  }, []);
+  };
 
   //Cyan Visited and checked for goal destination
   //green Next to be visited
@@ -122,30 +126,19 @@ const PathFinding = ({ stepByStepMode }) => {
   };
 
   const reset = () => {
-    const grid = generateMazeGrid(N);
-    const startX = findRandom(0, N);
-    const startY = findRandom(0, N);
-    const endX = findRandom(0, N);
-    const endY = findRandom(0, N);
-
-    // Ensure the starting and ending points are marked as true on the grid
-    grid[startX][startY] = true;
-    grid[endX][endY] = true;
-
-    setMatrix(grid);
-    setStartingPoint({ x: startX, y: startY });
-    setEndingPoint({ x: endX, y: endY });
+    generateNewMaze();
     setCurrentStep(0);
     setStepsToExecute([]);
     setMatrixIndicesStates(
       Array.from({ length: N }, () => Array(N).fill(null))
     );
-    setPathFound(false)
+    setPathFound(false);
     setIsPathFindable(true);
   };
 
   const clearStates = () => {
     setIsPathFindable(true);
+    setPathFound(false);
     setMatrixIndicesStates(
       Array.from({ length: N }, () => Array(N).fill(null))
     );
@@ -202,8 +195,12 @@ const PathFinding = ({ stepByStepMode }) => {
       <button onClick={reset}>Generate New</button>
       {pathFound && <button onClick={clearStates}>Clear States</button>}
 
-      <button disabled={!isPathFindable} onClick={startBFS}>Breadth First Search</button>
-      <button disabled={!isPathFindable} onClick={startDFS}>Depth First Search</button>
+      <button disabled={!isPathFindable} onClick={startBFS}>
+        Breadth First Search
+      </button>
+      <button disabled={!isPathFindable} onClick={startDFS}>
+        Depth First Search
+      </button>
 
       {stepByStepMode && stepsToExecute.length > 0 && (
         <>
