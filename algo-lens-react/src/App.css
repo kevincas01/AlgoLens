@@ -64,6 +64,8 @@ button:disabled {
 
 .settings-radio-groups-container {
   overflow: hidden;
+  width: 0;
+  height: 0;
 }
 .settings-header {
   font-size: 18px;
